@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, Routes, Route, useMatch, useNavigate } from "react-router-dom"
 import { useNotificationValue, useNotificationDispatch, notify } from "./NotificationContext"
+import { useField } from "./hooks"
 
 const initialState = [
   {
@@ -88,6 +89,10 @@ const Anecdotes = ({ anecdotes }) => {
 }
 
 const NewAnecdote = ({ anecdotes, setAnecdotes }) => {
+  const content = useField("text")
+  const author = useField("text")
+  const url = useField("text")
+
   const generateId = () => {
     return Number((Math.random() * 1000000).toFixed(0))
   }
@@ -100,6 +105,7 @@ const NewAnecdote = ({ anecdotes, setAnecdotes }) => {
       content: e.target[0].value,
       author: e.target[1].value,
       url: e.target[2].value,
+      votes: 0,
     }
     setAnecdotes(anecdotes.concat(anecdote))
     const payload = `created anecdote ${anecdote.content}`
@@ -107,24 +113,28 @@ const NewAnecdote = ({ anecdotes, setAnecdotes }) => {
     navigate("/")
   }
 
+  const reset = () => {
+    content.reset()
+    author.reset()
+    url.reset()
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={onSubmit}>
         <div>
-          <label htmlFor="content">content</label>
-          <input type="text" name="content" />
+          content: <input {...content.props} />
         </div>
         <div>
-          <label htmlFor="author">author</label>
-          <input type="text" name="author" />
+          author: <input {...author.props} />
         </div>
         <div>
-          <label htmlFor="url">url for more info</label>
-          <input type="text" name="url" />
+          url for more info <input {...url.props} />
         </div>
 
         <button type="submit">create</button>
+        <button type="button" onClick={reset}>reset</button>
       </form>
     </div>
   )
